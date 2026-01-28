@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+  title: Desafio Votações API
+  version: 1.0.0
+  description: API para gerenciamento votacões de uma pauta
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/1.0/pautas:
+    post:
+      summary: Criar uma nova pauta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PautaDto'
+      responses:
+        '200':
+          description: Pauta criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PautaDto'
+    get:
+      summary: Listar todas as pautas
+      responses:
+        '200':
+          description: Lista de pautas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PautaDto'
+  /api/1.0/pautas/{id}:
+    get:
+      summary: Buscar pauta por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pauta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PautaDto'
+        '404':
+          description: Pauta não encontrada
+  /api/1.0/sessao-votacao:
+    post:
+      summary: Criar uma nova sessão de votação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessaoVotacaoDto'
+      responses:
+        '200':
+          description: Sessão criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessaoVotacaoDto'
+    get:
+      summary: Listar todas as sessões de votação
+      responses:
+        '200':
+          description: Lista de sessões
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SessaoVotacaoDto'
+  /api/1.0/sessao-votacao/{id}:
+    get:
+      summary: Buscar sessão de votação por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sessão encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessaoVotacaoDto'
+        '404':
+          description: Sessão não encontrada
+  /api/1.0/votos:
+    post:
+      summary: Registrar um voto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VotoDto'
+      responses:
+        '200':
+          description: Voto registrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotoDto'
+    get:
+      summary: Listar todos os votos
+      responses:
+        '200':
+          description: Lista de votos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VotoDto'
+  /api/1.0/votos/{id}:
+    get:
+      summary: Buscar voto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Voto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotoDto'
+        '404':
+          description: Voto não encontrado
+  /api/1.0/votos/contagem/{pautaId}:
+    get:
+      summary: Contar votos por pauta
+      parameters:
+        - name: pautaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Resultado da contagem de votos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotosPorPautaResultDto'
+        '404':
+          description: Nenhum voto encontrado para a pauta
+components:
+  schemas:
+    PautaDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: "Pauta de exemplo"
+        descricao:
+          type: string
+          example: "Descrição da pauta"
+    SessaoVotacaoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        pautaId:
+          type: integer
+          example: 1
+        inicio:
+          type: string
+          format: date-time
+          example: "2026-01-28T10:00:00"
+        minutosAtiva:
+          type: integer
+          example: 10
+    VotoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        pautaId:
+          type: integer
+          example: 1
+        associadoId:
+          type: string
+          example: "user123"
+        voto:
+          type: boolean
+          example: true
+        dataVoto:
+          type: string
+          format: date-time
+          example: "2026-01-28T10:05:00"
+    VotosPorPautaResultDto:
+      type: object
+      properties:
+        pautaId:
+          type: integer
+          example: 1
+        totalVotos:
+          type: integer
+          example: 10
+        totalVotosSim:
+          type: integer
+          example: 6
+        totalVotosNao:
+          type: integer
+          example: 4
+        vencedor:
+          $ref: '#/components/schemas/VotoResultadoEnum'
+    VotoResultadoEnum:
+      type: string
+      enum:
+        - SIM
+        - NAO
+        - EMPATE
+
