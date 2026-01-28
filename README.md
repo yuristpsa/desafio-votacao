@@ -1,4 +1,4 @@
-# Desafio Voting API
+# Desafio Votação API
 
 API reativa para gerenciamento de pautas, sessões de votação e votos, desenvolvida com Spring WebFlux.
 
