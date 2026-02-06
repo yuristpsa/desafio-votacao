@@ -16,13 +16,15 @@ import java.nio.charset.StandardCharsets;
 public class GlobalExceptionHandler implements WebExceptionHandler {
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-        if (exchange.getResponse().isCommitted()) {
-            return Mono.error(ex);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        if (ex.getClass().getSimpleName().contains("NotFound")) {
+            status = HttpStatus.NOT_FOUND;
+        } else if (ex instanceof RuntimeException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
+        exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.TEXT_PLAIN);
         byte[] bytes = ex.getMessage() != null ? ex.getMessage().getBytes(StandardCharsets.UTF_8) : new byte[0];
         return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
     }
 }
-
